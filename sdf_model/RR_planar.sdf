@@ -14,7 +14,7 @@
                     </cylinder>
                 </geometry>
             </collision>
-            
+           
             <visual name="l1_visual">
                 <pose>0.25 0 0 0 1.6 0</pose>
                 <geometry>
@@ -25,7 +25,6 @@
                 </geometry>
             </visual>
             <visual name="l1_joint_case">
-                <pose>0 0 0 0 0 0</pose>
                 <geometry>
                     <cylinder>
                         <radius>0.08</radius>
@@ -36,11 +35,20 @@
                     <diffuse>0.98 0.22 0.1 1</diffuse>
                 </material>
             </visual>
+            <visual name="l1_joint_case_pt2">
+                <geometry>
+                    <sphere>
+                        <radius>0.1</radius>
+                    </sphere>
+                </geometry>
+            </visual>
+
+            
         </link>
         
         
         <link name="l2">
-            <pose>0.5 0 0 0 0 0</pose>
+            <pose relative_to='l1'>0.5 0 0 0 0 0</pose>
             <collision name="l2_collision">
                 <geometry>
                     <cylinder>
@@ -49,8 +57,9 @@
                     </cylinder>
                 </geometry>
             </collision>
+
             <visual name="l2_visual">
-                <pose>0.25 0 0.0 -1.6 0 -1.6</pose>
+                <pose>0.25 0 0.0 0 1.6 0 </pose>
                 <geometry>
                     <cylinder>
                         <radius>0.03</radius>
@@ -59,7 +68,6 @@
                 </geometry>
             </visual>
             <visual name="l2_joint_case">
-                <pose>0 0 0 0 0 0</pose>
                 <geometry>
                     <cylinder>
                         <radius>0.05</radius>
@@ -70,12 +78,24 @@
                     <diffuse>0.98 0.22 0.1 1</diffuse>
                 </material>
             </visual>
+            <visual name="l2_joint_case_pt2">
+                <geometry>
+                    <sphere>
+                        <radius>0.06</radius>
+                    </sphere>
+                </geometry>
+            </visual>
+
         </link>
         
+        <link name="end-effector">
+            <pose relative_to='l2'>0.5 0 0 0 0 0</pose>
+        </link>
+
         <joint name='q1' type='revolute'>
             <parent>world</parent>
             <child>l1</child>
-            <pose>0 0 0  0 0 0  </pose>
+            <pose relative_to="l1">0 0 0  0 0 0 </pose>
             <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
