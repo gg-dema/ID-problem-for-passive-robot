@@ -1,5 +1,7 @@
 clear all; 
 
+% if u wanna run this in octave, add the next line: 
+%pkg load symbolic
 syms q1 q2 q3 l2 l3; 
 
 % mapping: h(q) = theta
