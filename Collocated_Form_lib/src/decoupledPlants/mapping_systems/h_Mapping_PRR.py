@@ -1,7 +1,9 @@
 import sys
-sys.path.append('..')
+sys.path.append('../..')
 
-from Plant import PlanarPRR, Extractor
+
+import robot_header.header_h_mapping as header_h_mapping
+from decoupledPlants.Plant.PRR_rob import PlanarPRR
 
 from pydrake.systems.framework import (
     Context,
@@ -12,7 +14,7 @@ from numpy import sin, cos
 from math import atan2
 
 
-class PlanarPRR_inTheta(PlanarPRR):
+class PlanarPRR_inTheta(header_h_mapping, PlanarPRR):
 
     def __init__(self):
 
@@ -103,16 +105,4 @@ class PlanarPRR_inTheta(PlanarPRR):
             # output 
             derivatives = np.concatenate( (theta_dot, theta_dot_dot) )
             derivatives_theta.get_mutable_vector().SetFromVector(derivatives)
-
-
-class PlanarPRR_theta_extractor(Extractor):
-    
-    def __init__(self):
-        Extractor.__init__(self)
-        self.DeclareVectorInputPort('theta_state', BasicVector(6))
-        self.DeclareVectorOutputPort('EndEffector_state', BasicVector(4), self.extract_ee_state)
-
-    def extract_ee_state(self, context, ee_state):
-        theta_state = self.get_input_port().Eval(context)
-        ee_state.SetFromVector( np.array([theta_state[0], theta_state[1], theta_state[3], theta_state[4] ]) )
 
