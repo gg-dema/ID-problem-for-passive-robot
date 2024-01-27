@@ -1,3 +1,4 @@
+""" 
 import numpy as np
 from numpy import sin, cos
 
@@ -101,3 +102,34 @@ class PlanarPRR(header_plant):
         
         self.ActuationMatrix[2, 0] = -self.l[1] * sin(q2) 
         self.ActuationMatrix[2, 1] = -self.l[1] * cos(q2)
+"""
+
+# //------------------------------
+from pydrake.multibody.parsing import Parser
+
+from pydrake.systems.framework import DiagramBuilder
+from pydrake.multibody.plant import (AddMultibodyPlantSceneGraph,
+                                     ExternallyAppliedSpatialForce,
+                                     ExternallyAppliedSpatialForceMultiplexer
+                                    )
+from pydrake.multibody.math import SpatialForce
+
+
+
+class MultibodyPlanarPRR():
+    
+
+    def __init__(self):
+    
+        
+        builder = DiagramBuilder()
+        
+        self.plant, self.scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=1e-4)
+        Parser(self.plant, self.scene_graph).AddModels("add sdf path")
+        self.plant.Finalize()
+
+        self.diagram = builder.Build()
+        self.plant_context = self.diagram.CreateDefaultContext()
+
+
+
