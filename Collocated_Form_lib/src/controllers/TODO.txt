@@ -1,8 +1,0 @@
-
-Trick to implement later on (and funny idea)
-
-------------------------------------------
-
-after having defined the abstract class and the base controller, 
-check to integrate all in a clang extension for secure Abstract (OOPstyle)
-- https://cppyy.readthedocs.io/en/latest/
