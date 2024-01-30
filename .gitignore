@@ -3,3 +3,8 @@
 /__pycache__/
 /tmp/*
 /dev_notebook.test.ipynb
+
+/src/mapping/__pycache__
+/src/plant/__pycache__
+/src/controller/__pycache__
+/src/LauncherFunct/__pycache__
