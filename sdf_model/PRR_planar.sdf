@@ -1,22 +1,46 @@
 <?xml version='1.0'?>
 <sdf version='1.9'>
-    <model name="2R_planar_robot">
+    <world name="planar_world">
+    <model name="PRR">
         <static>false</static>
         
-        
         <link name="l1">
-            <pose>0 0 0 0 0 0</pose>
+
+            <pose>0 0 0  0 1.5707 0</pose>
             <collision name="l1_collision">
                 <geometry>
+                    <box>
+                        <size>0.05 0.09 1</size>
+                    </box>
+                </geometry>
+            </collision>
+
+
+            <visual name="l1_visual">
+                <geometry>
+                    <box>
+                        <size>0.05 0.09 1</size>
+                    </box>
+                </geometry>
+            </visual>
+            
+
+        </link> 
+                
+        
+        <link name="l2">
+            <pose relative_to='l1'>0 0 0.75 0 0 0</pose>
+            <!-- the 0.75 comes from h/2 of box + h/2 of cylinder-->
+            <collision name="l2_collision">
+                <geometry>
                     <cylinder>
-                        <radius>0.07</radius>
+                        <radius>0.05</radius>
                         <length>0.5</length>
                     </cylinder>
                 </geometry>
             </collision>
            
-            <visual name="l1_visual">
-                <pose>0.25 0 0 0 1.6 0</pose>
+            <visual name="l2_visual">
                 <geometry>
                     <cylinder>
                         <radius>0.05</radius>
@@ -24,32 +48,37 @@
                     </cylinder>
                 </geometry>
             </visual>
-            <visual name="l1_joint_case">
+
+            <visual name="l2_joint_case">
+
+                <pose>0 0 -0.25 0 -1.5707  0 </pose>
                 <geometry>
                     <cylinder>
-                        <radius>0.08</radius>
-                        <length>0.15</length>
+                        <radius>0.07</radius>
+                        <length>0.10</length>
                     </cylinder>
                 </geometry>
                 <material>
                     <diffuse>0.98 0.22 0.1 1</diffuse>
                 </material>
             </visual>
-            <visual name="l1_joint_case_pt2">
+            <visual name="l2_joint_case_pt2">
+
+                <pose>0 0 -0.25 0 -1.5707  0 </pose>
                 <geometry>
                     <sphere>
-                        <radius>0.1</radius>
+                        <radius>0.08</radius>
                     </sphere>
                 </geometry>
             </visual>
+        </link>
 
             
-        </link>
         
         
-        <link name="l2">
-            <pose relative_to='l1'>0.5 0 0 0 0 0</pose>
-            <collision name="l2_collision">
+        <link name="l3">
+            <pose relative_to='l2'>0 0 0.5 0 0 0</pose>
+            <collision name="l3_collision">
                 <geometry>
                     <cylinder>
                         <radius>0.07</radius>
@@ -58,8 +87,7 @@
                 </geometry>
             </collision>
 
-            <visual name="l2_visual">
-                <pose>0.25 0 0.0 0 1.6 0 </pose>
+            <visual name="l3_visual">
                 <geometry>
                     <cylinder>
                         <radius>0.03</radius>
@@ -67,7 +95,8 @@
                     </cylinder>
                 </geometry>
             </visual>
-            <visual name="l2_joint_case">
+            <visual name="l3_joint_case">
+                <pose>0 0 -0.25 0 -1.5707 0</pose>
                 <geometry>
                     <cylinder>
                         <radius>0.05</radius>
@@ -78,7 +107,8 @@
                     <diffuse>0.98 0.22 0.1 1</diffuse>
                 </material>
             </visual>
-            <visual name="l2_joint_case_pt2">
+            <visual name="l3_joint_case_pt2">
+                <pose>0 0 -0.25 0 -1.5707 0</pose>
                 <geometry>
                     <sphere>
                         <radius>0.06</radius>
@@ -88,14 +118,23 @@
 
         </link>
         
-        <link name="end-effector">
-            <pose relative_to='l2'>0.5 0 0 0 0 0</pose>
-        </link>
-
-        <joint name='q1' type='revolute'>
+        <joint name='q1' type="prismatic">
+            <pose>0 0 0 0 0 0</pose>
             <parent>world</parent>
             <child>l1</child>
-            <pose relative_to="l1">0 0 0  0 0 0 </pose>
+            <axis>
+                <xyz>0 0 1</xyz>
+                <limit>
+                    <lower>-0.5</lower>
+                    <upper>0.5</upper>
+                </limit>
+            </axis>    
+        </joint>
+
+        <joint name='q2' type='revolute'>
+            <pose relative_to="l2">0 0 -0.25 0 -1.5707 0</pose>
+            <parent>l1</parent>
+            <child>l2</child>
             <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
@@ -106,10 +145,11 @@
         </joint>
         
         
-        <joint name='q2' type='revolute'>
-            <parent>l1</parent>
-            <child>l2</child>
-            <pose relative_to='l2'>0 0 0 0 0 0</pose>
+        <joint name='q3' type='revolute'>
+            <pose>0 0 -0.25 0 1.5707 0 </pose>
+            <parent>l2</parent>
+            <child>l3</child>
+            
             <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
@@ -118,8 +158,9 @@
                 </limit>
             </axis>
         </joint>
-        
+    
 
     </model>
+    </world>
 </sdf>
 
