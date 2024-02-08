@@ -7,6 +7,17 @@
         <link name="l1">
 
             <pose>0 0 0  0 1.5707 0</pose>
+            <inertial>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+                <mass>1.0</mass>
+            </inertial>
             <collision name="l1_collision">
                 <geometry>
                     <box>
@@ -30,6 +41,17 @@
         
         <link name="l2">
             <pose relative_to='l1'>0 0 0.75 0 0 0</pose>
+            <inertial>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+                <mass>1.0</mass>
+            </inertial>
             <!-- the 0.75 comes from h/2 of box + h/2 of cylinder-->
             <collision name="l2_collision">
                 <geometry>
@@ -63,7 +85,6 @@
                 </material>
             </visual>
             <visual name="l2_joint_case_pt2">
-
                 <pose>0 0 -0.25 0 -1.5707  0 </pose>
                 <geometry>
                     <sphere>
@@ -78,6 +99,17 @@
         
         <link name="l3">
             <pose relative_to='l2'>0 0 0.5 0 0 0</pose>
+                        <inertial>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+                <mass>1.0</mass>
+            </inertial>
             <collision name="l3_collision">
                 <geometry>
                     <cylinder>
