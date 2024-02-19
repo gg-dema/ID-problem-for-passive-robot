@@ -169,10 +169,7 @@
             <child>l2</child>
             <axis>
                 <xyz>0 0 1</xyz>
-                <limit>
-                    <lower>0.0</lower>
-                    <upper>3.14</upper>
-                </limit>
+              
             </axis>
         </joint>
         
@@ -184,10 +181,7 @@
             
             <axis>
                 <xyz>0 0 1</xyz>
-                <limit>
-                    <lower>0</lower>
-                    <upper>3.14</upper>
-                </limit>
+
             </axis>
         </joint>
     
