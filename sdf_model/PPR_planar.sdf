@@ -5,7 +5,7 @@
         <static>false</static>
         
         <link name="l1">
-            <pose>0 0 0 -1.5707 0 0</pose>
+            <pose>0 -0.5 0 -1.5707 0 0</pose>
 
             <inertial>
                 <inertia>
@@ -32,11 +32,18 @@
                     </box>
                 </geometry>
             </visual>
-            
+            <visual name='joint_case1'>
+                <pose>0 0 0.5 0 0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>0.05</radius>
+                    </sphere>
+                </geometry>
+            </visual>
         </link>
     
         <link name="l2">
-            <pose relative_to='l1'>0 0 0.5  1.5707 0 1.5707</pose>            
+            <pose relative_to='l1'>-0.50 0 0.5  1.5707 0 1.5707</pose>            
 
             <inertial>
                 <inertia>
@@ -67,7 +74,14 @@
                     <diffuse>0.98 0.22 0.1 0.6</diffuse>
                 </material>
             </visual>
-            
+            <visual name='joint_case2'>
+            <pose >0 0 0.5 0 0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>0.05</radius>
+                    </sphere>
+                </geometry>
+            </visual>
         </link>
 
 
@@ -111,23 +125,31 @@
             <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
-                    <lower>-0.5</lower>
+                    <lower>0</lower>
                     <upper>0.5</upper>
                 </limit>
+                <dynamics>
+                    <damping>0.2</damping>
+                    <friction>0.1</friction>
+                </dynamics>
             </axis>    
         </joint>
 
         <joint name='q2' type="prismatic">
-            <pose relative_to='l2'>0 0 -0.25 0 0 0</pose>
+            <pose relative_to='l2'>0 0 0 0 0 0</pose>
             
             <parent>l1</parent>
             <child>l2</child>
             <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
-                    <lower>-0.5</lower>
+                    <lower>0</lower>
                     <upper>0.5</upper>
                 </limit>
+                <dynamics>
+                    <damping>0.2</damping>
+                    <friction>0.1</friction>
+                </dynamics>
 
             </axis>    
         </joint>
@@ -138,8 +160,10 @@
             <child>l3</child>
             <axis>
                 <xyz>-1 0 0</xyz>
-
-              
+            <dynamics>
+                    <damping>0.2</damping>
+                    <friction>0.1</friction>
+            </dynamics>
             </axis>
         </joint>
         

@@ -21,8 +21,8 @@ class CartesianController(LeafSystem):
         self.DeclareVectorOutputPort('F', BasicVector(2), self.CalcCartesiaForce)
 
     def CalcCartesiaForce(self, context, F): 
-        actual_state = self.get_input_port_estimated_state().Eval(context)
-        desider_state = self.get_input_port_desired_state().Eval(context)
+        actual_state = self.GetInputPort('actual_state').Eval(context)
+        desider_state = self.GetInputPort('desired_state').Eval(context)
 
         K_vect = context.get_numeric_parameter(0).get_value()
         error = desider_state - actual_state
@@ -31,11 +31,4 @@ class CartesianController(LeafSystem):
         fy = K_vect[1]*error[1] + K_vect[3]*error[3]
 
         F.SetFromVector(np.array([fx, fy]))
-
-    def get_input_port_estimated_state(self):
-        return self.get_input_port(0)
-    
-    def get_input_port_desired_state(self):
-        return self.get_input_port(1)
-    
     
