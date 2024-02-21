@@ -2,7 +2,7 @@ import numpy as np
 from numpy import sin, cos 
 
 from src.plant.PPR import PlanarPPR
-
+from overrides import override
 
 class PlanarPPR_theta(PlanarPPR):
 
@@ -33,15 +33,20 @@ class PlanarPPR_theta(PlanarPPR):
         derivatives = np.concatenate( (theta_dot, theta_dot_dot) )
         derivatives_theta.get_mutable_vector().SetFromVector(derivatives)
     
-    def eval_dyn_model(self, state_theta):
-        state_q = self.inverse_mapping(state_theta)
+    @override
+    def CalcEEState(self, context, EE_state):
+        state = context.get_continuous_state_vector()
+        EE_state.SetFromVector(np.array([state[0], state[1], state[3], state[4]]))
+    
+    @override
+    def eval_dyn_model(self, state_vect):
+        state_q = self.inverse_mapping(state_vect)
         self._eval_M_of_q(state_q)
         self._eval_friction_term(state_q)
         self._eval_C_of_q(state_q)
         self._eval_Jac_h(state_q)
         self._eval_Jac_h_dot(state_q)
         self._eval_M_of_theta()
-
     
     def inverse_mapping(self, state_theta) -> np.array:
         theta_dot = np.array([state_theta[3], state_theta[4], state_theta[5]])
@@ -50,8 +55,9 @@ class PlanarPPR_theta(PlanarPPR):
         q1 = state_theta[1] - self.l[2]*sin(q3)
         q2 = state_theta[0] - self.l[2]*cos(q3)
         q_vect = np.array([q1, q2, q3])
-       
-        if not (self.Jac_h == np.zeros((3,3)) ).all(): # at the first run Jac_h is all zeros
+
+        # at the first run Jac_h is all zeros
+        if not (self.Jac_h == np.zeros((3,3)) ).all(): 
             q_vect_dot = np.linalg.inv(self.Jac_h) @ theta_dot
         else:
             q_vect_dot = np.zeros(3)
@@ -80,7 +86,6 @@ class PlanarPPR_theta(PlanarPPR):
         self.Jac_h[2, 1] = 0
         self.Jac_h[2, 2] = 1
         
-
     def _eval_Jac_h_dot(self, state_in_q): 
 
         q3, q3dot = state_in_q[2], state_in_q[5]

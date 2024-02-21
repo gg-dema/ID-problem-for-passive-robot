@@ -15,7 +15,7 @@ class PlanarPPR(LeafSystem):
         self.M = np.zeros((3, 3))
         self.C = np.zeros((3))
         self.ActuationMatrix = np.zeros((3, 2))
-        self.Jac = np.zeros((3, 3))
+        self.Jac = np.zeros((2, 3))
         
         self.Fc = np.array([0.2, 0.2, 0.2])
         self.Fv = np.array([0.1, 0.1, 0.1])
@@ -24,6 +24,11 @@ class PlanarPPR(LeafSystem):
 
         self.DeclareVectorInputPort("F", BasicVector(2))
         self.DeclareStateOutputPort("state", group_index)
+        self.DeclareVectorOutputPort("EE_state", 
+                                     BasicVector(4),
+                                     self.CalcEEState, 
+                                     prerequisites_of_calc={self.all_state_ticket()},
+)
         
         self.init_dynamic_model_parameters()
 
@@ -46,8 +51,8 @@ class PlanarPPR(LeafSystem):
 
         self.m = [1, 1, 1]
         self.I = [1, 1, 1]
-        self.d = [None, None, 0.5]
-        self.l = [None, None, 1]  
+        self.d = [None, None, 0.25] # siamo sicuri su questo ? 
+        self.l = [None, None, 0.5]  
         
         self.a1 = self.m[0] + self.m[1] + self.m[2]
         self.a2 = self.m[1] + self.m[2] 
@@ -57,7 +62,7 @@ class PlanarPPR(LeafSystem):
     def eval_dyn_model(self, state_vect):
         self._eval_M_of_q(state_vect)
         self._eval_C_of_q(state_vect)
-        self._eval_actuation_matrix(state_vect)
+        self._eval_actuation_matrix(state_vect)     
 
     def _eval_M_of_q(self, state_vect):
 
@@ -91,48 +96,22 @@ class PlanarPPR(LeafSystem):
         self.ActuationMatrix[1, :] = [1, 0]
         self.ActuationMatrix[2, :] = [-self.l[2]*sin(q3), self.l[2] * cos(q3)]
 
+    def _eval_jac_ee_xy(self, state_vect):
 
+        self.Jac[0, :] = [0, 1, -self.l[2]*sin(state_vect[2])]
+        self.Jac[1, :] = [1, 0, self.l[2]*cos(state_vect[2])]
 
-
-class ForwardKinPPR(LeafSystem):
-
-    def __init__(self):
-        LeafSystem.__init__(self)
-        self.DeclareVectorInputPort('q', BasicVector(6))
-        self.DeclareVectorOutputPort('EE_state', BasicVector(4), self.extract_ee_state)
-
-
-    def extract_ee_state(self, context, ee_state):
-        x = self.get_input_port().Eval(context)
-        q1, q2, q3 = x[0], x[1], x[2]
-        dq1, dq2, dq3 = x[3], x[4], x[5]
-        x = q2 + 1*cos(q3)
-        y = q1 + 1*sin(q3)
-
-        jac = np.array( [[0, 1, -1*sin(q3)], 
-                         [1, 0, 1*cos(q3)], 
-                         ] )
-        
-        x_dot, y_dot = jac @ np.array([dq1, dq2, dq3])
-        ee_state.SetFromVector( np.array([x, y, x_dot, y_dot]) )
-
-    @staticmethod
-    def forward(q):
-        #print(q)
-        x = q[1] + 1*cos(q[2])
-        y = q[0] + 1*sin(q[2])
-
-        #print(f"x : {x}, y: {y}")
-
-        jac = np.array( [[0, 1, -1*sin(q[2])], 
-                         [1, 0, 1*cos(q[2])], 
-                         ] )
-        #print(f' jac \n{jac}')
-        x_dot, y_dot = jac @ np.array([q[3], q[4], q[5]])
-        #print(f"x_dot {x_dot}, y_dot {y_dot}")
-        return  np.array([x, y, x_dot, y_dot ]) 
-
-if __name__=="__main__":
-
-    PlanarPPR()
+    def forward_kin(self, q_vect):
+        x = q_vect[1] + self.l[2]*cos(q_vect[2])
+        y = q_vect[0] + self.l[2]*sin(q_vect[2])
+        return x, y
     
+    def CalcEEState(self, context, EE_state):
+
+        state = context.get_continuous_state_vector()
+        q1, q2, q3 = state[0], state[1], state[2]
+        dq1, dq2, dq3 = state[3], state[4], state[5]
+        self._eval_jac_ee_xy(state)
+        EE_x, EE_y = self.forward_kin([q1, q2, q3])
+        EE_x_dot, EE_y_dot = self.Jac @ np.array([dq1, dq2, dq3])
+        EE_state.SetFromVector(np.array([EE_x, EE_y, EE_x_dot, EE_y_dot]))
