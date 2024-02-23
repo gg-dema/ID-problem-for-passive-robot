@@ -6,7 +6,7 @@
         
         <link name="l1">
 
-            <pose>0 0 0  0 1.5707 0</pose>
+            <pose>-0.5 0 0  0 1.5707 0</pose>
             <inertial>
                 <inertia>
                     <ixx>1</ixx>
@@ -99,7 +99,7 @@
         
         <link name="l3">
             <pose relative_to='l2'>0 0 0.5 0 0 0</pose>
-                        <inertial>
+            <inertial>
                 <inertia>
                     <ixx>1</ixx>
                     <ixy>0</ixy>
@@ -147,11 +147,10 @@
                     </sphere>
                 </geometry>
             </visual>
-
         </link>
         
         <joint name='q1' type="prismatic">
-            <pose>0 0 0 0 0 0</pose>
+            <pose relative_to='l1'>0 0 0.5 0 0 0</pose>
             <parent>world</parent>
             <child>l1</child>
             <axis>
@@ -175,7 +174,7 @@
         
         
         <joint name='q3' type='revolute'>
-            <pose>0 0 -0.25 0 1.5707 0 </pose>
+            <pose>0 0 -0.25 0 -1.5707 0 </pose>
             <parent>l2</parent>
             <child>l3</child>
             

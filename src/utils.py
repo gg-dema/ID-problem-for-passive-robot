@@ -21,7 +21,7 @@ def save_diagram_svg(file_name, diagram):
 
 
 
-def visualize(meshcat, robot_sdf_path, q_state_vect, rate):
+def visualize(meshcat, robot_sdf_path, q_state_vect, rate=None):
     meshcat.Delete()
 
     builder = DiagramBuilder()
@@ -32,7 +32,7 @@ def visualize(meshcat, robot_sdf_path, q_state_vect, rate):
 
 
 
-    BODY_NAMES = ['l1', 'l2', 'l3']
+    BODY_NAMES = ['q1_parent', 'q2_parent', 'q3_parent']
     for body_name in BODY_NAMES:
         AddMultibodyTriad(plant.GetFrameByName(body_name), scene_graph)
 
@@ -49,4 +49,5 @@ def visualize(meshcat, robot_sdf_path, q_state_vect, rate):
     for q_values in q_state_vect:
         plant_context.SetDiscreteState(q_values)
         diagram.ForcedPublish(context)
-        sleep(rate)
+        if not rate==None:
+            sleep(rate)

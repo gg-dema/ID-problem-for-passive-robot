@@ -19,17 +19,17 @@ class PlanarPRR(LeafSystem):
         self.M = np.zeros((3, 3))
         self.C = np.zeros((3))
         self.ActuationMatrix = np.zeros((3, 2))
-        self.Jac = np.zeros((3, 3))
-
-        # def joint limit: 
-        self.limit_q1 = 12
-        self.limit_q2 = np.pi
-        self.limit_q3 = np.pi
+        self.Jac = np.zeros((2, 3))
 
         group_index = self.DeclareContinuousState(6)
 
         self.DeclareVectorInputPort("F", BasicVector(2))
         self.DeclareStateOutputPort("state", group_index)
+        self.DeclareVectorOutputPort("EE_state", 
+                                     BasicVector(4),
+                                     self.CalcEEState, 
+                                     prerequisites_of_calc={self.all_state_ticket()},
+)
         
         self.init_dynamic_model_parameters()
 
@@ -38,11 +38,6 @@ class PlanarPRR(LeafSystem):
         fx, fy = self.get_input_port(0).Eval(context)
         F = np.array([fx, fy])
         state = context.get_continuous_state_vector()
-
-        # test on fixing joint limit. Still to do: this next lines doesn't work
-        #dq1 = min(max(state[3], -self.limit_q1), self.limit_q1)
-        #dq2 = min(max(state[4], -self.limit_q2), self.limit_q2)
-        #dq3 = min(max(state[5], -self.limit_q3), self.limit_q3)
 
         dq1, dq2, dq3 = state[3], state[4], state[5]
         self.eval_dyn_model(state_vect=state)
@@ -55,8 +50,8 @@ class PlanarPRR(LeafSystem):
 
         self.m = [1, 1, 1]
         self.I = [1, 1, 1]
-        self.d = [None, 0.5, 0.5]
-        self.l = [None, 1, 1]  # the first is none because is q1
+        self.d = [None, 0.25, 0.25]
+        self.l = [None, 0.5, 0.5]  # the first is none because is q1
         
         self.a1 = self.m[0] + self.m[1] + self.m[2]
         self.a2 = self.I[1] + self.m[1] * (self.d[1]**2) + self.m[2]*(self.l[2]**2)
@@ -107,46 +102,25 @@ class PlanarPRR(LeafSystem):
         self.ActuationMatrix[2, 0] = -self.l[1] * sin(q2) 
         self.ActuationMatrix[2, 1] = -self.l[1] * cos(q2)
 
-
-
-
-class PlanarPRR_forward_kin(LeafSystem):
-
-    def __init__(self):
-        LeafSystem.__init__(self)
-
-        self.Jac = np.zeros((3, 3))
-        self.l = np.array([None, 1, 1])
-
-        self.DeclareVectorInputPort('q_state', BasicVector(6))
-        self.DeclareVectorOutputPort('EndEffector_state', BasicVector(4), self.CalcForwardAndDiffKinematic)
-
-    def CalcForwardAndDiffKinematic(self, context, theta_state):
-
-        q_state = self.get_input_port(0).Eval(context)
-        q = np.array([q_state[0], q_state[1], q_state[2]])
-        q_dot = np.array([q_state[3], q_state[4], q_state[5]])
-
-        self.eval_jac(q)
-        theta_1, theta_2 = self.forward_kin(q)
-        theta_1_dot, theta_2_dot, _ = self.Jac @ q_dot
-        theta_state.SetFromVector([theta_1, theta_2, theta_1_dot, theta_2_dot])
-        print(f"x_ee: {theta_1}, y_ee: {theta_2}")
-
-
-    def eval_jac(self, q): 
+    def _eval_jac_ee_xy(self, state_vect):
         
-        q1, q2, q3 = q[0], q[1], q[2]
+        q2, q3 = state_vect[1], state_vect[2]
+        self.Jac[0, :] = [1, -self.l[1]*sin(q2) - self.l[2]*sin(q2+q3), -self.l[2]*sin(q2+q3)]
+        self.Jac[1, :] = [0, self.l[1]*cos(q2) + self.l[2]*cos(q2+q3), self.l[2]*cos(q3)]
 
-        self.Jac[0] = [1, -self.l[1]*sin(q2) - self.l[2]*sin(q2+q3), - self.l[2]*sin(q2+q3)]
-        self.Jac[1] = [0, self.l[1]*cos(q2) + self.l[2]*cos(q2+q3), self.l[2]*cos(q2+q3)]
-        self.Jac[2] = [0, 1, 1]
-    
-    def forward_kin(self, q):
-        q1, q2, q3 = q[0], q[1], q[2]
+    def forward_kin(self, state_vect):
+        q1, q2, q3 = state_vect[0], state_vect[1], state_vect[2]
+        x = q1 + self.l[1]*cos(q2) + self.l[2]*cos(q2+q3)
+        y =  self.l[1]*sin(q2) + self.l[2]*sin(q2+q3)
+        return x, y 
 
-        theta_1 = q1 + self.l[1]*cos(q2) + self.l[2]*cos(q2+q3)
-        theta_2 = self.l[1]*sin(q2) + self.l[2]*sin(q2+q3)
 
-        return theta_1, theta_2
+    def CalcEEState(self, context, EE_state):
 
+        state = context.get_continuous_state_vector()
+        q1, q2, q3 = state[0], state[1], state[2]
+        dq1, dq2, dq3 = state[3], state[4], state[5]
+        self._eval_jac_ee_xy(state)
+        EE_x, EE_y = self.forward_kin([q1, q2, q3])
+        EE_x_dot, EE_y_dot = self.Jac @ np.array([dq1, dq2, dq3])
+        EE_state.SetFromVector(np.array([EE_x, EE_y, EE_x_dot, EE_y_dot]))
