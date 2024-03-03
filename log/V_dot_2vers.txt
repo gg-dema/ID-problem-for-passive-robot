@@ -1,0 +1,71 @@
+dt1*t1 + dt2*t2 + dt1*((2*F1*I3 + 2*F1*d3^2*m3 + F1*l3^2*m2 + F1*l3^2*m3 - F1*l3^2*m2*cos(2*t3) - F1*l3^2*m3*cos(2*t3) - F2*l3^2*m2*sin(2*t3) - F2*l3^2*m3*sin(2*t3) - 2*F1*d3*l3*m3 + 2*F1*d3*l3*m3*cos(2*t3) + F2*d3*l3*m3*sin(2*t3))/(2*I3*m2 + 2*I3*m3 + d3^2*m3^2 + d3^2*m3^2*cos(2*t3) + 2*d3^2*m2*m3) - dt3^2*l3*cos(t3) + d3*dt3^2*m3*sin(t3)) + dt2*((F2*I3*m2 + F2*I3*m3 + F2*d3^2*m2*m3 + F2*d3^2*m3^2*cos(t3)^2 + F2*l3^2*m2^2*cos(t3)^2 + F2*l3^2*m3^2*cos(t3)^2 - (F1*l3^2*m2^2*sin(2*t3))/2 - (F1*l3^2*m3^2*sin(2*t3))/2 + F2*l3^2*m1*m2*cos(t3)^2 + F2*l3^2*m1*m3*cos(t3)^2 + 2*F2*l3^2*m2*m3*cos(t3)^2 + (F1*d3*l3*m3^2*sin(2*t3))/2 - (F1*l3^2*m1*m2*sin(2*t3))/2 - (F1*l3^2*m1*m3*sin(2*t3))/2 - F1*l3^2*m2*m3*sin(2*t3) + (F1*d3*l3*m1*m3*sin(2*t3))/2 + (F1*d3*l3*m2*m3*sin(2*t3))/2)/((m1 + m2 + m3)*(d3^2*m3^2*cos(t3)^2 + m2*d3^2*m3 + I3*m3 + I3*m2)) - dt3^2*l3*sin(t3) + d3*dt3^2*m3*cos(t3)) + (dt3*(F2*l3*m2*cos(t3) + F2*l3*m3*cos(t3) + F1*d3*m3*sin(t3) - F1*l3*m2*sin(t3) - F1*l3*m3*sin(t3)))/(d3^2*m3^2*cos(t3)^2 + m2*d3^2*m3 + I3*m3 + I3*m2)
+
+
+
+# F collected
+((dt1*(2*I3 + 2*d3^2*m3 + l3^2*m2 + l3^2*m3 - 2*d3*l3*m3 - l3^2*m2*cos(2*t3) - l3^2*m3*cos(2*t3) + 2*d3*l3*m3*cos(2*t3)))/(2*I3*m2 + 2*I3*m3 + d3^2*m3^2 + d3^2*m3^2*cos(2*t3) + 2*d3^2*m2*m3) - (dt3*(l3*m2*sin(t3) - d3*m3*sin(t3) + l3*m3*sin(t3)))/(d3^2*m3^2*cos(t3)^2 + m2*d3^2*m3 + I3*m3 + I3*m2) - (dt2*((sin(2*t3)*l3^2*m2^2)/2 + sin(2*t3)*l3^2*m2*m3 + (m1*sin(2*t3)*l3^2*m2)/2 + (sin(2*t3)*l3^2*m3^2)/2 + (m1*sin(2*t3)*l3^2*m3)/2 - (d3*sin(2*t3)*l3*m2*m3)/2 - (d3*sin(2*t3)*l3*m3^2)/2 - (d3*m1*sin(2*t3)*l3*m3)/2))/((m1 + m2 + m3)*(d3^2*m3^2*cos(t3)^2 + m2*d3^2*m3 + I3*m3 + I3*m2)))*F1 + ((dt3*(l3*m2*cos(t3) + l3*m3*cos(t3)))/(d3^2*m3^2*cos(t3)^2 + m2*d3^2*m3 + I3*m3 + I3*m2) - (dt1*(l3^2*m2*sin(2*t3) + l3^2*m3*sin(2*t3) - d3*l3*m3*sin(2*t3)))/(2*I3*m2 + 2*I3*m3 + d3^2*m3^2 + d3^2*m3^2*cos(2*t3) + 2*d3^2*m2*m3) + (dt2*(d3^2*m2*m3 + d3^2*m3^2*cos(t3)^2 + l3^2*m2^2*cos(t3)^2 + 2*l3^2*m2*m3*cos(t3)^2 + m1*l3^2*m2*cos(t3)^2 + l3^2*m3^2*cos(t3)^2 + m1*l3^2*m3*cos(t3)^2 + I3*m2 + I3*m3))/((m1 + m2 + m3)*(d3^2*m3^2*cos(t3)^2 + m2*d3^2*m3 + I3*m3 + I3*m2)))*F2 + dt1*t1 + dt2*t2 - dt1*(dt3^2*l3*cos(t3) - d3*dt3^2*m3*sin(t3)) - dt2*(dt3^2*l3*sin(t3) - d3*dt3^2*m3*cos(t3))
+
+
+
+# version con I params
+
+dt1*t1 +
+dt2*t2 +
+dt1*(
+(2*F1*I3 + 2*F1*d3^2*m3 + F1*l3^2*m2 + F1*l3^2*m3 - F1*l3^2*m2*cos(2*t3) - F1*l3^2*m3*cos(2*t3) - F2*l3^2*m2*sin(2*t3) - F2*l3^2*m3*sin(2*t3) - 2*F1*d3*l3*m3 + 2*F1*d3*l3*m3*cos(2*t3) + F2*d3*l3*m3*sin(2*t3))
+/
+(2*I3*m2 + 2*I3*m3 + d3^2*m3^2 + d3^2*m3^2*cos(2*t3) + 2*d3^2*m2*m3) 
+- dt3^2*l3*cos(t3)
++ d3*dt3^2*m3*sin(t3)) 
++ dt2*((F2*I3*m2 
++ F2*I3*m3
++ F2*d3^2*m2*m3 
++ F2*d3^2*m3^2*cos(t3)^2 
++ F2*l3^2*m2^2*cos(t3)^2
++ F2*l3^2*m3^2*cos(t3)^2
+- (F1*l3^2*m2^2*sin(2*t3))/2
+- (F1*l3^2*m3^2*sin(2*t3))/2 
++ F2*l3^2*m1*m2*cos(t3)^2 
++ F2*l3^2*m1*m3*cos(t3)^2 
++ 2*F2*l3^2*m2*m3*cos(t3)^2 
++ (F1*d3*l3*m3^2*sin(2*t3))/2
+- (F1*l3^2*m1*m2*sin(2*t3))/2
+- (F1*l3^2*m1*m3*sin(2*t3))/2
+- F1*l3^2*m2*m3*sin(2*t3) 
++ (F1*d3*l3*m1*m3*sin(2*t3))/2
++ (F1*d3*l3*m2*m3*sin(2*t3))/2)
+   	/
+  ((m1 + m2 + m3)*(d3^2*m3^2*cos(t3)^2 + m2*d3^2*m3 + I3*m3 + I3*m2)) 
+   	- dt3^2*l3*sin(t3) + d3*dt3^2*m3*cos(t3))
++   (dt3*
+	(F2*l3*m2*cos(t3)
+	+ F2*l3*m3*cos(t3) 
+	+ F1*d3*m3*sin(t3)
+	- F1*l3*m2*sin(t3)    	  
+   	- F1*l3*m3*sin(t3)))
+   	/
+   	(d3^2*m3^2*cos(t3)^2 	   
+    + m2*d3^2*m3 + I3*m3 + I3*m2)
+  
+------------------------------------------------------------
+
+dt1*t1 
++ dt2*t2 
++ dt2*(
+	(3*F2 + 7*F2*cos(t3)^2 - (3*F1*sin(2*t3))/2)	/	(3*(cos(t3)^2 + 3)) 
+	- dt3^2*sin(t3) 
+	+ dt3^2*cos(t3)
+	)
++ dt1*(dt3^2*sin(t3) 
++ (4*F1 - F2*sin(2*t3))   /    (cos(2*t3) + 7)
+- dt3^2*cos(t3))
++ (dt3*(2*F2*cos(t3) - F1*sin(t3)))		/	(cos(t3)^2 + 3)
+
+
+
+--------------
+dt2*
+(t2 + (3*F2 + 7*F2*cos(t3)^2 - (3*F1*sin(2*t3))/2)/(3*(cos(t3)^2 + 3))) 
++ dt1*
+(t1 + (4*F1 - F2*sin(2*t3))/(cos(2*t3) + 7)) 
+- dt1*dt3^2*(cos(t3) - sin(t3)) + dt2*dt3^2*(cos(t3) - sin(t3)) + (dt3*(2*F2*cos(t3) - F1*sin(t3)))/(cos(t3)^2 + 3)
