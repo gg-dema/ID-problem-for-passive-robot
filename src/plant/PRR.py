@@ -12,10 +12,12 @@ from math import atan2
 
 class PlanarPRR(LeafSystem):
 
-    def __init__(self):
+    def __init__(self, friction=0.0):
 
         LeafSystem.__init__(self)
 
+        # viscous friction coefficient, equal on every joint (0 = frictionless)
+        self.friction = friction
         self.M = np.zeros((3, 3))
         self.C = np.zeros((3))
         self.ActuationMatrix = np.zeros((3, 2))
@@ -42,7 +44,7 @@ class PlanarPRR(LeafSystem):
         dq1, dq2, dq3 = state[3], state[4], state[5]
         self.eval_dyn_model(state_vect=state)
         q_dot = np.array([dq1, dq2, dq3])
-        q_dot_dot = np.linalg.inv(self.M) @ ((self.ActuationMatrix @ F) - self.C)
+        q_dot_dot = np.linalg.inv(self.M) @ ((self.ActuationMatrix @ F) - self.C - self.friction * q_dot)
         derivatives = np.concatenate( (q_dot, q_dot_dot) )
         derivatives_out.get_mutable_vector().SetFromVector(derivatives)
 
@@ -54,7 +56,7 @@ class PlanarPRR(LeafSystem):
         self.l = [None, 0.5, 0.5]  # the first is none because is q1
         
         self.a1 = self.m[0] + self.m[1] + self.m[2]
-        self.a2 = self.I[1] + self.m[1] * (self.d[1]**2) + self.m[2]*(self.l[2]**2)
+        self.a2 = self.I[1] + self.m[1] * (self.d[1]**2) + self.m[2]*(self.l[1]**2)
         self.a3 = self.I[2] + self.m[2] * (self.d[2]**2)
         self.a4 = self.m[2] * self.d[2]
         self.a5 = self.m[1] * self.d[1] + self.m[2] * self.l[1]
@@ -85,28 +87,21 @@ class PlanarPRR(LeafSystem):
         q1, q2, q3 = state_vect[0], state_vect[1], state_vect[2]
         dq1, dq2, dq3 = state_vect[3], state_vect[4], state_vect[5]
 
-        self.C[0] = (-self.a5*cos(q2) + self.a4*cos(q2+q3))*(dq2**2) - self.a4*cos(q2+q3)*dq3*(dq2 + dq3)
+        self.C[0] = -self.a5*cos(q2)*(dq2**2) - self.a4*cos(q2+q3)*((dq2 + dq3)**2)
         self.C[1] = -self.a4 * self.l[1] * sin(q3) * dq3 * (2*dq2 + dq3)
-        self.C[2] = self.a4 * self.l[2] * sin(q3) * (dq2**2)
+        self.C[2] = self.a4 * self.l[1] * sin(q3) * (dq2**2)
 
     def _eval_actuation_matrix(self, state_vect):
 
-        q1, q2, q3 = state_vect[0], state_vect[1], state_vect[2]
-
-        self.ActuationMatrix[0, 0]  = 1
-        self.ActuationMatrix[0, 1]  = 0 
-        
-        self.ActuationMatrix[1, 0] = -self.l[1] * sin(q2) - self.l[2] * sin(q2 + q3)
-        self.ActuationMatrix[1, 1] = -self.l[1] * cos(q2) - self.l[2] * cos(q2 + q3)
-        
-        self.ActuationMatrix[2, 0] = -self.l[1] * sin(q2) 
-        self.ActuationMatrix[2, 1] = -self.l[1] * cos(q2)
+        # force applied at the EE: by kineto-static duality the actuation matrix is J^T(q)
+        self._eval_jac_ee_xy(state_vect)
+        self.ActuationMatrix = self.Jac.T.copy()
 
     def _eval_jac_ee_xy(self, state_vect):
-        
+
         q2, q3 = state_vect[1], state_vect[2]
         self.Jac[0, :] = [1, -self.l[1]*sin(q2) - self.l[2]*sin(q2+q3), -self.l[2]*sin(q2+q3)]
-        self.Jac[1, :] = [0, self.l[1]*cos(q2) + self.l[2]*cos(q2+q3), self.l[2]*cos(q3)]
+        self.Jac[1, :] = [0, self.l[1]*cos(q2) + self.l[2]*cos(q2+q3), self.l[2]*cos(q2+q3)]
 
     def forward_kin(self, state_vect):
         q1, q2, q3 = state_vect[0], state_vect[1], state_vect[2]
